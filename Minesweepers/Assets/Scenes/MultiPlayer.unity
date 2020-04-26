@@ -814,9 +814,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc5f26a7dc593cc4d9d4ac7fea7ae5de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 0}
-  netowork: {fileID: 0}
-  flagButton: {fileID: 0}
+  board: {fileID: 2145321274}
+  netowork: {fileID: 901598778}
+  flagButton: {fileID: 1014143759}
 --- !u!82 &901598783
 AudioSource:
   m_ObjectHideFlags: 0
@@ -991,7 +991,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 901598781}
+      - m_Target: {fileID: 901598782}
         m_MethodName: ToggleFlag
         m_Mode: 1
         m_Arguments:
@@ -1024,7 +1024,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300010, guid: f82ab82640d4f494d898a821d5af2c89, type: 3}
+  m_Sprite: {fileID: 21300010, guid: 37522dbf8582ada4c84d199201939ff7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

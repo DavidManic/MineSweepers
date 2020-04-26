@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using Assets;
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,17 +45,37 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
 
     public override void OnJoinedLobby()
     {
-       /* RoomOptions roomOptions = new RoomOptions();
-        roomOptions.IsVisible = true;
-        roomOptions.IsOpen = true;
-        roomOptions.MaxPlayers = 4;
-        roomOptions.Plugins = new string[] { "MineSweepersPlugin" };
-        //roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() { { "HeroCount", heroCount }, { "EnemieCount", enemieCount } };
+        /* RoomOptions roomOptions = new RoomOptions();
+         roomOptions.IsVisible = true;
+         roomOptions.IsOpen = true;
+         roomOptions.MaxPlayers = 4;
+         roomOptions.Plugins = new string[] { "MineSweepersPlugin" };
+         //roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() { { "HeroCount", heroCount }, { "EnemieCount", enemieCount } };
 
-        TypedLobby lobby = new TypedLobby("Main", LobbyType.SqlLobby);
-        PhotonNetwork.CreateRoom("aaa", roomOptions, lobby);*/
+         TypedLobby lobby = new TypedLobby("Main", LobbyType.SqlLobby);
+         PhotonNetwork.CreateRoom("aaa", roomOptions, lobby);*/
     }
-    public void CreateRoom(string name,int hight,int width,int maxPlayers,int mineRate)
+    public void CreateRoom(GameOptions options)
+    {
+        //if (!Rooms.ContainsKey(name))
+        {
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.IsVisible = true;
+            roomOptions.IsOpen = true;
+            roomOptions.MaxPlayers = 4;
+            roomOptions.Plugins = new string[] { "MineSweepers"+options.plugin };
+            roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() {
+                { "plugin", "MineSweepersVersus" }, { "hight", options.hight }, { "width", options.width },
+                { "maxPlayers", options.numOfPlayers }, { "mineRate", options.mineRate },
+                { "firstSafe", options.firstSafe },{ "endOnExpload",options.endOnExpload },
+                { "joinAfter",options.JoinAfterStart } };
+            roomOptions.CustomRoomPropertiesForLobby = new string[] { "plugin", "hight", "width", "mineRate" };
+
+            TypedLobby lobby = new TypedLobby("Main", LobbyType.SqlLobby);
+            PhotonNetwork.CreateRoom(name, roomOptions, lobby);
+        }
+    }
+    public void CreateRoom(string name,int hight,int width,int maxPlayers)
     {
         //if (!Rooms.ContainsKey(name))
         {
@@ -63,7 +84,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
             roomOptions.IsOpen = true;
             roomOptions.MaxPlayers = 4;
             roomOptions.Plugins = new string[] { "MineSweepersVersus" };
-            roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() { { "plugin", "MineSweepersVersus" }, { "hight", hight }, { "width", width },{ "maxPlayers", maxPlayers },{ "mineRate", mineRate } };
+            roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() { { "plugin", "MineSweepersVersus" }, { "hight", hight }, { "width", width },{ "maxPlayers", maxPlayers } };
             roomOptions.CustomRoomPropertiesForLobby = new string[] { "plugin", "hight", "width", "mineRate" };
 
             TypedLobby lobby = new TypedLobby("Main", LobbyType.SqlLobby);

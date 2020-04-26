@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ public class CreatePanel : MonoBehaviour
     [SerializeField]
     InputField roomName;
     [SerializeField]
+    private Dropdown mod;
+    [SerializeField]
     private Text hightText;
     [SerializeField]
     private Text widthText;
@@ -15,6 +18,13 @@ public class CreatePanel : MonoBehaviour
     private Text playersText;
     [SerializeField]
     private Text percentText;
+    [SerializeField]
+    private Toggle firstSafe;
+    [SerializeField]
+    private Toggle endOnExpload;
+    [SerializeField]
+    private Toggle joinAfter;
+
     [SerializeField]
     NetworkManager networkManager;
 
@@ -54,7 +64,8 @@ public class CreatePanel : MonoBehaviour
     public void OnCreateClick()
     {
         if(!string.IsNullOrEmpty(roomName.text))
-            networkManager.CreateRoom(roomName.text, int.Parse(hightText.text), int.Parse(widthText.text), int.Parse(playersText.text),int.Parse(percentText.text));
+            networkManager.CreateRoom(new GameOptions(roomName.text, mod.options[mod.value].text, int.Parse(hightText.text), int.Parse(widthText.text), int.Parse(playersText.text),int.Parse(percentText.text),
+                firstSafe,endOnExpload,joinAfter));
     }
 
     public void OnCancelClicke()

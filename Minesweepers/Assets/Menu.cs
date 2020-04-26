@@ -18,6 +18,8 @@ public class Menu : MonoBehaviour
     [SerializeField]
     GameObject playerText;
 
+    bool gameHasEnded = false;
+
     Dictionary<int, Text> texts = new Dictionary<int, Text>();
 
     // Start is called before the first frame update
@@ -30,18 +32,20 @@ public class Menu : MonoBehaviour
         networkController.OnMatchEnd += OnMatchEnd;
     }
 
-    private void OnMatchEnd(Dictionary<int, (Player player, int score)> leaderBoard)
+    private void OnMatchEnd(List<(int, Player, int)> leaderBoard)
     {
+        status.text = "Game won by: " + (leaderBoard[0].Item2.NickName.Length > 0 ? leaderBoard[0].Item2.NickName : "User_" + leaderBoard[0].Item2.ActorNumber);
+        gameHasEnded = true;
         foreach (Text t in texts.Values)
             Destroy(t.gameObject);
         texts.Clear();
 
         gameObject.SetActive(true);
-        foreach(int place in leaderBoard.Keys)
+        foreach((int, Player, int) x in leaderBoard)
         {
-            Player player = leaderBoard[place].player;
+            Player player = x.Item2;
             texts.Add(player.ActorNumber, Instantiate(playerText, playersPanel).GetComponent<Text>());
-            texts[player.ActorNumber].text = player.NickName.Length > 0 ? player.NickName : "User_" + player.ActorNumber;
+            texts[player.ActorNumber].text = (player.NickName.Length > 0 ? player.NickName : "User_" + player.ActorNumber) +" "+ x.Item3;
             
         }
 
@@ -50,12 +54,16 @@ public class Menu : MonoBehaviour
     private void OnMatchBegin()
     {
         gameObject.SetActive(false);
+        status.text = "Match in progress";
     }
 
     private void OnPlayerLeft(Player player)
     {
-        Destroy(texts[player.ActorNumber].gameObject);
-        texts.Remove(player.ActorNumber);
+        if (!gameHasEnded)
+        {
+            Destroy(texts[player.ActorNumber].gameObject);
+            texts.Remove(player.ActorNumber);
+        }
     }
 
     private void OnPlayerEnter(Player player)

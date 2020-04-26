@@ -16,7 +16,7 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
 
     public delegate void PlayerChanged(Player player);
     public delegate void MatchBegin();
-    public delegate void MatchEnd(Dictionary<int, (Player, int)> leaderBoard);
+    public delegate void MatchEnd(List<(int, Player, int)> leaderBoard);
     public MatchBegin OnMatchBegin;
     public MatchEnd OnMatchEnd;
     public PlayerChanged OnPlayerLeft;
@@ -24,7 +24,7 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
 
     public bool IsGameActive { get; protected set; }
 
-    public enum Event { GameStart = 1, GameEnd = 2, StartTurn = 10, EndTurn = 11, Move = 12, ToggleFlag = 13, ReceiveMove = 20, ReceiveToggleFlag = 21, CurrentPlayerChanged = 30, scoreSet = 31, scoreUpdate = 32 }
+    public enum Event { GameStart = 1, GameEnd = 2, StartTurn = 10, EndTurn = 11, Move = 12, ToggleFlag = 13, ReceiveMove = 20, ReceiveToggleFlag = 21, CurrentPlayerChanged = 30, scoreSet = 31, scoreUpdate = 32, SyncFields = 90, SyncFlags = 91 }
     // Start is called before the first frame update
     void Start()
     {
@@ -69,10 +69,39 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
             case Event.GameEnd:
                 OnGameEnd(content);
                 break;
+            case Event.SyncFields:
+                OnSyncFields(content);
+                break;
+            case Event.SyncFlags:
+                onSyncFlags(content);
+                break;
             default:
                 break;
         }
 
+    }
+
+    private void onSyncFlags(Dictionary<byte, object> content)
+    {
+        byte i = 0;
+        while (i < content.Count)
+        {
+            int y = (int)content[i++];
+            int x = (int)content[i++];
+            board.ToggleFlag(y, x, true);
+        }
+    }
+
+    private void OnSyncFields(Dictionary<byte, object> content)
+    {
+        byte i = 0;
+        while (i < content.Count)
+        {
+            int y = (int)content[i++];
+            int x = (int)content[i++];
+            int val = (int)content[i++];
+            board.SetTile(y, x, val);
+        }
     }
 
     private void OnScoreUpdate(Dictionary<byte, object> content)
@@ -94,12 +123,12 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
 
     private void OnGameEnd(Dictionary<byte, object> content)
     {
-        Dictionary<int,(Player,int)> leaderBoard = new Dictionary<int, (Player, int)>();
+        List<(int,Player,int)> leaderBoard = new List<(int, Player, int)>();
         byte i = 0;
         int place = 1;
         while (i < content.Count)
         {
-            leaderBoard.Add(place++,(PhotonNetwork.CurrentRoom.GetPlayer((int)content[i++]), (int)content[i++]));
+            leaderBoard.Add((place++,PhotonNetwork.CurrentRoom.GetPlayer((int)content[i++]), (int)content[i++]));
         }
         IsGameActive = false;
         OnMatchEnd?.Invoke(leaderBoard);
@@ -117,17 +146,19 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
     private void OnGameStart(Dictionary<byte, object> content)
     {
         IsGameActive = true;
-        OnMatchBegin?.Invoke();
         Debug.Log("OnGameStart");
 
         int hight = (int)content[0];
         int width = (int)content[1];
+        int mineCount = (int)content[2];
 
-        board.MakeBoard(hight, width);
+        board.MakeBoard(hight, width,mineCount);
+        OnMatchBegin?.Invoke();
     }
 
     private void OnReciveMove(Dictionary<byte, object> content)
     {
+        Debug.Log("Recive for opening: " + content.Count);
         int y = (int)content[0];
         int x = (int)content[1];
         int val = (int)content[2];

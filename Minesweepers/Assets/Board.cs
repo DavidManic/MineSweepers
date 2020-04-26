@@ -13,11 +13,12 @@ public class Board : MonoBehaviour
     GameObject[,] tiles;
     bool[,] reveald;
     bool[,] flags;
-    public int FlagCount { get; private set; }
-    public int ExplodedCount { get; private set; }
+    public int FlagCount { get; protected set; }
+    public int ExplodedCount { get; protected set; }
 
-    public int Hight { get; private set; }
-    public int Width { get; private set; }
+    public int Hight { get; protected set; }
+    public int Width { get; protected set; }
+    public int MineCount { get; protected set; }
 
 
     public delegate void MinesLeftChanged(int current);
@@ -29,10 +30,12 @@ public class Board : MonoBehaviour
         
     }
 
-    public void MakeBoard(int hight, int width)
+    public void MakeBoard(int hight, int width,int mineCount)
     {
         Hight = hight;
         Width = width;
+        MineCount = mineCount;
+        OnMinesLeftChanged?.Invoke(MineCount);
 
         tiles = new GameObject[hight, width];
         reveald = new bool[hight, width];
@@ -69,6 +72,8 @@ public class Board : MonoBehaviour
 
             factory.SetMine(tiles[y, x].GetComponent<SpriteRenderer>());
             tiles[y, x].GetComponent<SpriteRenderer>().color = new Color(.5f, 0, 0);
+            MineCount--;
+            OnMinesLeftChanged?.Invoke(MineCount);
         }
         else
         {
@@ -83,6 +88,9 @@ public class Board : MonoBehaviour
             factory.SetFlag(tiles[y, x].GetComponent<SpriteRenderer>());
         else
             factory.SetNormal(tiles[y,x].GetComponent<SpriteRenderer>());
+
+        MineCount += IsFlag ? -1 : 1;
+        OnMinesLeftChanged?.Invoke(MineCount);
     } 
 
 }
