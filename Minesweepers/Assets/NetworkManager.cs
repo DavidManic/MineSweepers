@@ -21,8 +21,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(this);
-            throw new System.Exception("An instance of this singleton already exists.");
+            Destroy(gameObject);
+            //throw new System.Exception("An instance of this singleton already exists.");
         }
         else
         {
@@ -69,10 +69,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
                 { "maxPlayers", options.numOfPlayers }, { "mineRate", options.mineRate },
                 { "firstSafe", options.firstSafe },{ "endOnExpload",options.endOnExpload },
                 { "joinAfter",options.JoinAfterStart } };
-            roomOptions.CustomRoomPropertiesForLobby = new string[] { "plugin", "hight", "width", "mineRate" };
+            roomOptions.CustomRoomPropertiesForLobby = new string[] { "plugin", "hight", "width", "mineRate", "maxPlayers" };
 
             TypedLobby lobby = new TypedLobby("Main", LobbyType.SqlLobby);
-            PhotonNetwork.CreateRoom(name, roomOptions, lobby);
+            PhotonNetwork.CreateRoom(options.name, roomOptions, lobby);
         }
     }
     public void CreateRoom(string name,int hight,int width,int maxPlayers)
