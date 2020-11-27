@@ -20,17 +20,19 @@ public class ServerEntry : MonoBehaviour
     {
         this.roomInfo = roomInfo;
         transform.GetChild(0).GetComponent<Text>().text = roomInfo.Name;
-        transform.GetChild(1).GetComponent<Text>().text = roomInfo.CustomProperties["plugin"].ToString();
+        transform.GetChild(1).GetComponent<Text>().text = roomInfo.CustomProperties["plugin"].ToString().Remove(0,"MineSweepers".Length);
         transform.GetChild(2).GetComponent<Text>().text = roomInfo.CustomProperties["hight"].ToString();
         transform.GetChild(3).GetComponent<Text>().text = roomInfo.CustomProperties["width"].ToString();
-        transform.GetChild(4).GetComponent<Text>().text = ((int)roomInfo.CustomProperties["mineRate"]/100).ToString();
+        transform.GetChild(4).GetComponent<Text>().text = ((int)roomInfo.CustomProperties["mineRate"]/100f).ToString();
+        transform.GetChild(5).GetComponent<Text>().text = roomInfo.PlayerCount+"/"+roomInfo.CustomProperties["maxPlayers"];
         transform.SetParent(parent);
         return gameObject;
     }
 
     public void Join()
     {
-        PhotonNetwork.JoinRoom(roomInfo.Name);
+        if(roomInfo.MaxPlayers>roomInfo.PlayerCount)
+            PhotonNetwork.JoinRoom(roomInfo.Name);
 
     }
 }

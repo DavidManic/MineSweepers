@@ -22,9 +22,21 @@ public class InputController : MonoBehaviour
 
     public bool forceMobile = true;
 
+    /// <summary>
+    /// Hight of the display
+    /// </summary>
     private float displayHight { get { return (int)camera.orthographicSize * 2; } }
+    /// <summary>
+    /// Width of display
+    /// </summary>
     private float displayWidth { get { return (int)camera.orthographicSize * 2*Camera.main.aspect; } }
+    /// <summary>
+    /// Difference in board Hight and display hight
+    /// </summary>
     private float HightDifference { get { return (board.Hight - displayHight + 2) / 2; } }
+    /// <summary>
+    /// Difference in board width and display hight
+    /// </summary>
     private float WidthDifference { get { return (board.Width - displayWidth + 2) / 2; } }
     private Vector2 boardCentar = Vector2.zero;
     public void Start()
@@ -44,7 +56,9 @@ public class InputController : MonoBehaviour
 
         netowork.OnMatchBegin += OnMatchBegin;
     }
-
+    /// <summary>
+    /// Called on begining of match
+    /// </summary>
     private void OnMatchBegin()
     {
         Debug.Log("width: " + board.Width + " hight: " + board.Hight);
@@ -53,16 +67,17 @@ public class InputController : MonoBehaviour
         camera.transform.position = new Vector3( boardCentar.x , boardCentar.y,camera.transform.position.z);
     }
 
+    /// <summary>
+    /// Clamp to board width
+    /// </summary>
     private float NormalizeWidth(float width)
     {
-        //return Mathf.Clamp(width, board.Width / 2 -2 - WidthDifference, board.Width / 2 +2+ WidthDifference);
-        //return (displayWidth / 2 - 1)> (board.Width - displayWidth + 1)?board.Width/2: Mathf.Clamp(width, displayWidth/2-2, board.Width - displayWidth/2+2);
-        // return Mathf.Clamp(width,boardCentar.x-WidthDifference, boardCentar.x+WidthDifference);
-        
-        //float widthDifference = WidthDifference < 0 ? 0 : WidthDifference;
         return Mathf.Clamp(width, board.Width / 2 - WidthDifference - 1, board.Width / 2 + WidthDifference + 1);
     }
 
+    /// <summary>
+    /// Clamp to board high
+    /// </summary>
     private float NormalizeHight(float hight)
     {
         return Mathf.Clamp(hight, -board.Hight / 2 - HightDifference-1, -board.Hight / 2 + HightDifference+1);
@@ -113,6 +128,9 @@ public class InputController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Zoom with camera camera and readjust positioning
+    /// </summary>
     private void Zoom()
     {
         camera.orthographicSize = Mathf.Clamp(camera.orthographicSize - Input.mouseScrollDelta.y, 5, 15);
@@ -123,15 +141,16 @@ public class InputController : MonoBehaviour
             float HightDifference = displayHight - board.Hight;
             WidthDifference = WidthDifference < 0 ? 0 : WidthDifference;
             HightDifference = HightDifference < 0 ? 0 : HightDifference;
-            /*camera.transform.position = new Vector3(displayWidth < board.Width ? Mathf.Clamp(camera.transform.position.x, board.Width / 2 + 1 - WidthDifference, board.Width / 2 + 1 + WidthDifference) : camera.transform.position.x,
-                                                      displayHight < board.Hight ? Mathf.Clamp(camera.transform.position.y, -board.Hight / 2 - HightDifference, -board.Hight / 2 + HightDifference) : camera.transform.position.y,
-                                                      camera.transform.position.z);*/
+
             camera.transform.position = new Vector3(displayWidth < board.Width ? NormalizeWidth(camera.transform.position.x) : camera.transform.position.x,
                                                       displayHight < board.Hight ? NormalizeHight(camera.transform.position.y) : camera.transform.position.y,
                                                             camera.transform.position.z);
         }
     }
-
+    /// <summary>
+    /// Move camera for move amount
+    /// </summary>
+    /// <param name="move"></param>
     private void MoveCamera(Vector3 move)
     {
         if (displayHight < board.Hight || displayWidth < board.Width)
@@ -140,9 +159,6 @@ public class InputController : MonoBehaviour
                                                       displayHight < board.Hight ? NormalizeHight(camera.transform.position.y + move.y) : camera.transform.position.y,
                                                             camera.transform.position.z);
 
-            /*Debug.Log("minX: " + (board.Width / 2 + 1 - WidthDifference) + " maxX: " + (board.Width / 2 + 1 + WidthDifference));
-            Debug.Log("minX: " + (-board.Hight / 2 - HightDifference) + " maxX: " + (-board.Hight / 2 + HightDifference));
-            Debug.Log("move: " + move);*/
         }
 
     }

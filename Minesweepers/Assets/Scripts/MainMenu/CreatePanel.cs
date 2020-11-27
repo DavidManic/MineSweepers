@@ -65,7 +65,7 @@ public class CreatePanel : MonoBehaviour
     {
         if(!string.IsNullOrEmpty(roomName.text))
             networkManager.CreateRoom(new GameOptions(roomName.text, mod.options[mod.value].text, int.Parse(hightText.text), int.Parse(widthText.text), int.Parse(playersText.text),int.Parse(percentText.text),
-                firstSafe,endOnExpload,joinAfter));
+                firstSafe.isOn,endOnExpload.isOn, joinAfter.isOn));
     }
 
     public void OnCancelClicke()

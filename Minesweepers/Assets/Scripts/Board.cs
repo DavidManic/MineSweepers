@@ -24,12 +24,12 @@ public class Board : MonoBehaviour
     public delegate void MinesLeftChanged(int current);
     public event MinesLeftChanged OnMinesLeftChanged;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
+    /// <summary>
+    /// Make empty board
+    /// </summary>
+    /// <param name="hight"></param>
+    /// <param name="width"></param>
+    /// <param name="mineCount"></param>
     public void MakeBoard(int hight, int width,int mineCount)
     {
         Hight = hight;
@@ -64,7 +64,12 @@ public class Board : MonoBehaviour
         
 
     }
-
+    /// <summary>
+    /// Set a tile vlaue
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="x"></param>
+    /// <param name="value"></param>
     public void SetTile(int y, int x, int value)
     {
         if (value == 10)
@@ -82,6 +87,12 @@ public class Board : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggle the flag
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="x"></param>
+    /// <param name="IsFlag"></param>
     public void ToggleFlag(int y, int x, bool IsFlag)
     {
         if (IsFlag)

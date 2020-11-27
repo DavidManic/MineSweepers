@@ -25,25 +25,33 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
     public bool IsGameActive { get; protected set; }
 
     public enum Event { GameStart = 1, GameEnd = 2, StartTurn = 10, EndTurn = 11, Move = 12, ToggleFlag = 13, ReceiveMove = 20, ReceiveToggleFlag = 21, CurrentPlayerChanged = 30, scoreSet = 31, scoreUpdate = 32, SyncFields = 90, SyncFlags = 91 }
-    // Start is called before the first frame update
-    void Start()
-    {
-       // PhotonNetwork.AddCallbackTarget(this);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    
+    /// <summary>
+    /// Open tile
+    /// </summary>
+    /// <param name="y">colum</param>
+    /// <param name="x">row</param>
     public void OpenTile(int y, int x)
     {
 
         Dictionary<byte, object> data = new Dictionary<byte, object>() { { 0, y }, { 1, x } };
         PhotonNetwork.RaiseEvent((byte)Event.Move, data, RaiseEventOptions.Default, SendOptions.SendReliable);
     }
+    /// <summary>
+    /// Toggle flag
+    /// </summary>
+    /// <param name="y"></param>
+    /// <param name="x"></param>
+    public void ToggleFlag(int y, int x)
+    {
 
+        Dictionary<byte, object> data = new Dictionary<byte, object>() { { 0, y }, { 1, x } };
+        PhotonNetwork.RaiseEvent((byte)Event.ToggleFlag, data, RaiseEventOptions.Default, SendOptions.SendReliable);
+    }
+    /// <summary>
+    /// Recieve events from server
+    /// </summary>
+    /// <param name="photonEvent"></param>
     public void OnEvent(EventData photonEvent)
     {
         Debug.Log("EVENT: " + (Event)photonEvent.Code+ " code: "+photonEvent.Code);
@@ -64,7 +72,7 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
                 OnScoreUpdate(content);
                 break;
             case Event.scoreSet:
-                onScoreSet(content);
+                OnScoreSet(content);
                 break;
             case Event.GameEnd:
                 OnGameEnd(content);
@@ -73,7 +81,7 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
                 OnSyncFields(content);
                 break;
             case Event.SyncFlags:
-                onSyncFlags(content);
+                OnSyncFlags(content);
                 break;
             default:
                 break;
@@ -81,7 +89,11 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
 
     }
 
-    private void onSyncFlags(Dictionary<byte, object> content)
+    /// <summary>
+    /// Sync flags from given content
+    /// </summary>
+    /// <param name="content"></param>
+    private void OnSyncFlags(Dictionary<byte, object> content)
     {
         byte i = 0;
         while (i < content.Count)
@@ -91,7 +103,10 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
             board.ToggleFlag(y, x, true);
         }
     }
-
+    /// <summary>
+    /// Sync fields from recieved content
+    /// </summary>
+    /// <param name="content"></param>
     private void OnSyncFields(Dictionary<byte, object> content)
     {
         byte i = 0;
@@ -104,6 +119,10 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         }
     }
 
+    /// <summary>
+    /// Update the score
+    /// </summary>
+    /// <param name="content"></param>
     private void OnScoreUpdate(Dictionary<byte, object> content)
     {
         int key = (int)content[0];
@@ -111,16 +130,20 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         statusPanel.UpdateScore(key,val);
     }
 
-    private void onScoreSet(Dictionary<byte, object> content)
+    /// <summary>
+    /// Set scores from recived data
+    /// </summary>
+    /// <param name="content"></param>
+    private void OnScoreSet(Dictionary<byte, object> content)
     {
-        Debug.Log(content[0]);
-        Debug.Log(content[0].GetType());
         Dictionary<int, int> data = content[0] as Dictionary<int, int>;
-        Debug.Log(data);
-        Debug.Log(data.Keys);
         statusPanel.Setup(data);
     }
 
+    /// <summary>
+    /// Called on end of the game
+    /// </summary>
+    /// <param name="content"></param>
     private void OnGameEnd(Dictionary<byte, object> content)
     {
         List<(int,Player,int)> leaderBoard = new List<(int, Player, int)>();
@@ -136,13 +159,10 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         Invoke("LeaveRoom", 3f);
     }
 
-    internal void ToggleFlag(int y, int x)
-    {
-
-        Dictionary<byte, object> data = new Dictionary<byte, object>() { { 0, y }, { 1, x } };
-        PhotonNetwork.RaiseEvent((byte)Event.ToggleFlag, data, RaiseEventOptions.Default, SendOptions.SendReliable);
-    }
-
+    /// <summary>
+    /// Called when game starts initialize the board
+    /// </summary>
+    /// <param name="content"></param>
     private void OnGameStart(Dictionary<byte, object> content)
     {
         IsGameActive = true;
@@ -156,6 +176,10 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         OnMatchBegin?.Invoke();
     }
 
+    /// <summary>
+    /// Recive move (revealing the tile)
+    /// </summary>
+    /// <param name="content"></param>
     private void OnReciveMove(Dictionary<byte, object> content)
     {
         Debug.Log("Recive for opening: " + content.Count);
@@ -171,6 +195,10 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
             OpenRest(content);
     }
 
+    /// <summary>
+    /// Open the rest of tiles if recived more then one tile 
+    /// </summary>
+    /// <param name="content"></param>
     private void OpenRest(Dictionary<byte, object> content)
     {
         byte i = 3;
@@ -183,6 +211,10 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         }
     }
 
+    /// <summary>
+    /// Recive flag toggle
+    /// </summary>
+    /// <param name="content"></param>
     private void OnReceiveToggleFlag(Dictionary<byte, object> content)
     {
         int y = (int)content[0];
@@ -192,18 +224,29 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         board.ToggleFlag(y, x, val);
     }
 
+    /// <summary>
+    /// On player entered the room
+    /// </summary>
+    /// <param name="newPlayer"></param>
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
         OnPlayerEnter?.Invoke(newPlayer);
     }
 
+    /// <summary>
+    /// On Player left the room
+    /// </summary>
+    /// <param name="otherPlayer"></param>
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
         OnPlayerLeft?.Invoke(otherPlayer);
     }
 
+    /// <summary>
+    /// Leave the room and chage scene to launcher
+    /// </summary>
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
