@@ -25,6 +25,7 @@ public class StatusPanel : MonoBehaviour
     {
         
         board.OnMinesLeftChanged += OnMinesLeftChanged;
+        
 
         //minesLeft.text = "" + table.MineCount;
     }
@@ -36,6 +37,10 @@ public class StatusPanel : MonoBehaviour
 
     public void Setup(Dictionary<int,int> startScores)
     {
+        if(scores!=null)
+        foreach (Text t in scores.Values)
+            Destroy(t.gameObject);
+
         this.scores = new Dictionary<int, Text>();
         this.names = new Dictionary<int, string>();
         
@@ -55,6 +60,16 @@ public class StatusPanel : MonoBehaviour
     public void UpdateScore(int key,int value)
     {
         scores[key].text = names[key] + " : " + value;
+    }
+
+    public void RemovePlayer(int actorNr)
+    {
+        if (scores.ContainsKey(actorNr))
+        {
+            Destroy(scores[actorNr].gameObject);
+            scores.Remove(actorNr);
+
+        }
     }
     // Update is called once per frame
     void Update()

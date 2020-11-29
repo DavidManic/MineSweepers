@@ -88,7 +88,6 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
         }
 
     }
-
     /// <summary>
     /// Sync flags from given content
     /// </summary>
@@ -242,6 +241,7 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
     {
         base.OnPlayerLeftRoom(otherPlayer);
         OnPlayerLeft?.Invoke(otherPlayer);
+        statusPanel.RemovePlayer(otherPlayer.ActorNumber);
     }
 
     /// <summary>
