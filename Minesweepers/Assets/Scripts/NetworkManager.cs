@@ -42,23 +42,28 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
         PhotonNetwork.JoinLobby(new TypedLobby("Main", LobbyType.SqlLobby));
 
     }
-    
+
     public override void OnDisconnected(DisconnectCause cause)
     {
-        if(!reconnecting)
-            StartCoroutine(Reconnect());
+        Debug.Log(cause);
+
+        if (!reconnecting)
+            StartCoroutine(Reconnect(cause == DisconnectCause.DisconnectByServerLogic));
     }
 
-    private IEnumerator Reconnect()
+    private IEnumerator Reconnect(bool kicked)
     {
         reconnecting = true;
         while (!PhotonNetwork.IsConnected)
         {
+            //PhotonNetwork.ConnectUsingSettings();
             Debug.Log("Reconnecting");
-
+            if(kicked)
+                PhotonNetwork.Reconnect();
+            else
             if (!PhotonNetwork.ReconnectAndRejoin())
                 PhotonNetwork.ConnectUsingSettings();
-
+            
             yield return new WaitForSeconds(3f);
         }
         reconnecting = false;
@@ -77,9 +82,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
                 { "maxPlayers", options.numOfPlayers }, { "mineRate", options.mineRate },
                 { "firstSafe", options.firstSafe },{ "endOnExpload",options.endOnExpload },
                 { "joinAfter",options.JoinAfterStart } };
-            roomOptions.CustomRoomPropertiesForLobby = new string[] { "plugin", "hight", "width", "mineRate", "maxPlayers" };
+            roomOptions.CustomRoomPropertiesForLobby = new string[] { "plugin", "hight", "width", "mineRate", "maxPlayers", "joinAfter" };
 
-            if (!options.JoinAfterStart) roomOptions.MaxPlayers = (byte)options.numOfPlayers;
+            roomOptions.MaxPlayers = (byte)options.numOfPlayers;
 
             TypedLobby lobby = new TypedLobby("Main", LobbyType.SqlLobby);
             PhotonNetwork.CreateRoom(options.name, roomOptions, lobby);

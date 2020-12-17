@@ -31,8 +31,12 @@ public class ServerEntry : MonoBehaviour
 
     public void Join()
     {
-        if(roomInfo.MaxPlayers>roomInfo.PlayerCount)
+        if (roomInfo.MaxPlayers > roomInfo.PlayerCount )
+        {
             PhotonNetwork.JoinRoom(roomInfo.Name);
+
+        }else
+            Debug.Log("Full");
 
     }
 }
