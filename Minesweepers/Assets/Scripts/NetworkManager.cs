@@ -75,7 +75,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IMatchmakingCallbacks
             RoomOptions roomOptions = new RoomOptions();
             roomOptions.IsVisible = true;
             roomOptions.IsOpen = true;
-            roomOptions.MaxPlayers = 4;
             roomOptions.Plugins = new string[] { "MineSweepers"+options.plugin };
             roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable() {
                 { "plugin", "MineSweepers"+options.plugin }, { "hight", options.hight }, { "width", options.width },

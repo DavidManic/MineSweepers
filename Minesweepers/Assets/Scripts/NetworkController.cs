@@ -56,7 +56,6 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
     {
         Debug.Log("EVENT: " + (Event)photonEvent.Code+ " code: "+photonEvent.Code);
         Dictionary<byte, object> content = photonEvent.Parameters as Dictionary<byte, object>;
-        Debug.Log(content.Count);
         switch ((Event)photonEvent.Code)
         {
             case Event.GameStart:
