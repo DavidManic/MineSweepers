@@ -180,15 +180,15 @@ public class NetworkController : MonoBehaviourPunCallbacks, IOnEventCallback,IIn
     /// <param name="content"></param>
     private void OnReciveMove(Dictionary<byte, object> content)
     {
-        Debug.Log("Recive for opening: " + content.Count);
         int y = (int)content[0];
         int x = (int)content[1];
         int val = (int)content[2];
+
         board.SetTile(y, x, val);
+
         if (val == 10)
             GetComponent<AudioSource>().Play();
 
-        Debug.Log("Recive Open:" + y + " : " + x + " value: " + val);
         if (content.Count > 3)
             OpenRest(content);
     }
